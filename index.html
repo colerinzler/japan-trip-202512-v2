@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍎 青森アドベンチャー 2025 | Aomori Adventure</title>
+    <style>
+        :root {
+            --color-white: #ffffff;
+            --color-snow-50: #f8fcff;
+            --color-ice-200: #e6f5ff;
+            --color-slate-500: #626c71;
+            --color-slate-900: #13343b;
+            --color-apple-red: #dc3545;
+            --color-apple-red-dark: #b91c1c;
+            --color-ice-accent: #64c8e6;
+            --color-red-400: #ff5459;
+            --color-orange-500: #a84b2f;
+            --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --radius-base: 8px;
+            --radius-lg: 12px;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: var(--font-family-base);
+            background: linear-gradient(180deg, var(--color-snow-50) 0%, var(--color-ice-200) 100%);
+            color: var(--color-slate-900);
+        }
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            background: var(--color-white);
+            padding: var(--space-16);
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-bottom: 1px solid rgba(200,235,255,0.5);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--color-apple-red) 0%, var(--color-apple-red-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-16);
+            padding-bottom: 80px;
+        }
+        .tab-buttons {
+            display: flex;
+            gap: var(--space-12);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--color-white);
+            border-top: 1px solid rgba(200,235,255,0.4);
+            padding: var(--space-12) var(--space-16);
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+        .tab-btn {
+            border: none;
+            background: transparent;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            font-size: 24px;
+            color: rgba(98,108,113,0.5);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-4);
+            padding: var(--space-8);
+            transition: all 200ms ease;
+        }
+        .tab-btn span {
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .tab-btn.active {
+            color: var(--color-apple-red);
+            transform: scale(1.15);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .card {
+            background: var(--color-white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-16);
+            margin-bottom: var(--space-16);
+            box-shadow: 0 2px 8px rgba(200,235,255,0.3);
+            border: 1px solid rgba(200,235,255,0.4);
+        }
+        .current-schedule {
+            background: linear-gradient(135deg, rgba(240,248,255,0.6) 0%, rgba(230,245,255,0.8) 100%);
+            border-left: 4px solid var(--color-apple-red);
+            padding: var(--space-16);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-16);
+        }
+        .schedule-item {
+            background: rgba(255,255,255,0.8);
+            padding: var(--space-12);
+            margin-bottom: var(--space-8);
+            border-radius: var(--radius-base);
+            border-left: 3px solid var(--color-ice-accent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-12);
+        }
+        .day-card {
+            background: var(--color-white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-12);
+            box-shadow: 0 2px 8px rgba(200,235,255,0.3);
+            border-left: 4px solid var(--color-ice-accent);
+            border: 1px solid rgba(200,235,255,0.3);
+        }
+        .map-link {
+            background: var(--color-white);
+            padding: var(--space-16);
+            border-radius: var(--radius-lg);
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 2px 8px rgba(200,235,255,0.3);
+            border: 1px solid rgba(200,235,255,0.4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-12);
+        }
+        .budget-item {
+            background: var(--color-white);
+            padding: var(--space-12);
+            border-radius: var(--radius-base);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 3px solid var(--color-ice-accent);
+            box-shadow: 0 1px 4px rgba(200,235,255,0.2);
+            margin-bottom: var(--space-12);
+        }
+        .exchange-rate {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-12);
+        }
+        .exchange-input input {
+            padding: var(--space-12);
+            border: 1px solid #d1d5db;
+            border-radius: var(--radius-base);
+            font-size: 16px;
+        }
+        @media (max-width: 600px) {
+            .calendar-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>🍎 青森アドベンチャー 2025 | Aomori Adventure</h1>
+            <p>12/23 - 12/31 | 冬の祭典 × Winter Festival × りんご 🍎 ❄️</p>
+        </div>
+
+        <div class="content">
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="switchTab(this, 'home')">🏠<span>ホーム</span></button>
+                <button class="tab-btn" onclick="switchTab(this, 'calendar')">📅<span>スケジュール</span></button>
+                <button class="tab-btn" onclick="switchTab(this, 'maps')">🗺️<span>地図</span></button>
+                <button class="tab-btn" onclick="switchTab(this, 'budget')">💰<span>予算</span></button>
+            </div>
+
+            <!-- Home Tab -->
+            <div id="home" class="tab-content active">
+                <div class="card">
+                    <h3>📊 旅のプログレス</h3>
+                    <div style="width:100%; height:8px; background:rgba(200,235,255,0.4); border-radius:4px; overflow:hidden; margin:12px 0;">
+                        <div id="progress-bar" style="height:100%; background:linear-gradient(90deg,var(--color-apple-red) 0%,var(--color-ice-accent) 100%); width:10%; transition:width 300ms ease;"></div>
+                    </div>
+                    <div id="countdown" style="font-weight:600; color:var(--color-apple-red);">距離出發還有 <strong>8</strong> 天 ✈️</div>
+                </div>
+
+                <div class="card">
+                    <h3>🌤️ 天気情報 (模擬)</h3>
+                    <div style="font-size:48px; text-align:center;">🌤️ ❄️</div>
+                    <p style="text-align:center; color:var(--color-slate-500);">東京 8°C | 青森 -2°C</p>
+                </div>
+
+                <div class="current-schedule">
+                    <h2>📍 本日のスケジュール</h2>
+                    <div id="today-schedule">
+                        <p style="color:var(--color-slate-500); text-align:center;">選擇日期查看詳細行程</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Tab -->
+            <div id="calendar" class="tab-content">
+                <div class="calendar-grid" id="calendar-grid"></div>
+            </div>
+
+            <!-- Maps Tab -->
+            <div id="maps" class="tab-content">
+                <div id="map-links"></div>
+            </div>
+
+            <!-- Budget Tab -->
+            <div id="budget" class="tab-content">
+                <div class="card">
+                    <h3>💱 匯率計算機</h3>
+                    <div class="exchange-rate">
+                        <div>
+                            <label>JPY</label>
+                            <input type="number" id="jpy-input" placeholder="輸入金額" oninput="convertCurrency()">
+                        </div>
+                        <div>
+                            <label>NTD</label>
+                            <input type="number" id="ntd-output" readonly placeholder="自動轉換">
+                        </div>
+                    </div>
+                    <div style="text-align:center; margin-top:12px; font-size:12px; color:var(--color-slate-500);">
+                        匯率: 1 JPY = 0.21 NTD
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>📊 預算明細</h3>
+                    <div id="budget-list"></div>
+                    <div style="background:linear-gradient(135deg,rgba(240,248,255,0.6) 0%,rgba(230,245,255,0.8) 100%); padding:var(--space-16); border-radius:var(--radius-lg); text-align:center; margin-top:var(--space-16); border:2px solid rgba(200,235,255,0.5);">
+                        <div style="font-size:28px; font-weight:700; color:var(--color-apple-red);" id="budget-total">¥191,210</div>
+                        <p style="color:var(--color-slate-500); font-size:12px; margin-top:8px;">
+                            ≈ NT$<span id="budget-ntd">40,154</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tripData = {
+            days: [
+                {date:'12/23', location:'台北 → 東京', activities:[
+                    {time:'07:30', activity:'台北出發'},
+                    {time:'10:40', activity:'桃園機場'},
+                    {time:'14:55', activity:'東京成田機場'},
+                    {time:'16:00', activity:'Henn na Hotel Tokyo Ginza check-in'},
+                    {time:'18:00', activity:'Hakatagekijo Yurakucho 晚餐'},
+                    {time:'20:00', activity:'購物 買外套'},
+                    {time:'23:00', activity:'回東京住宿'}
+                ]},
+                {date:'12/24', location:'東京 → 山形', activities:[
+                    {time:'09:00', activity:'東京早餐'},
+                    {time:'10:00', activity:'逛街'},
+                    {time:'15:30', activity:'JR往山形'},
+                    {time:'18:00', activity:'SUPER HOTEL check-in'},
+                    {time:'19:00', activity:'山形市晚餐TBA'},
+                    {time:'22:00', activity:'回山形住宿 SUPER HOTEL'}
+                ]},
+                {date:'12/25', location:'山形', activities:[
+                    {time:'09:00', activity:'SUPER HOTEL 吃早餐'},
+                    {time:'10:00', activity:'搭大眾運輸'},
+                    {time:'11:00', activity:'藏王滑雪場（藏王樹冰）'},
+                    {time:'17:00', activity:'回山形市'},
+                    {time:'18:00', activity:'山形市晚餐TBA'},
+                    {time:'22:00', activity:'回山形住宿 SUPER HOTEL'}
+                ]},
+                {date:'12/26', location:'山形', activities:[
+                    {time:'09:00', activity:'山形市早餐'},
+                    {time:'10:00', activity:'租車'},
+                    {time:'11:00', activity:'狐狸村'},
+                    {time:'15:00', activity:'銀山溫泉 (大正浪漫館)'},
+                    {time:'18:00', activity:'山形市晚餐TBA'},
+                    {time:'22:00', activity:'回山形住宿 SUPER HOTEL'}
+                ]},
+                {date:'12/27', location:'山形 → 角館 → 田澤湖', activities:[
+                    {time:'08:30', activity:'山形市出發'},
+                    {time:'12:00', activity:'角館'},
+                    {time:'15:00', activity:'田澤湖'},
+                    {time:'17:00', activity:'還車'},
+                    {time:'18:00', activity:'KAMENOI HOTEL TAZAWAKO check-in'},
+                    {time:'19:00', activity:'晚餐'}
+                ]},
+                {date:'12/28', location:'田澤湖', activities:[
+                    {time:'09:00', activity:'KAMENOI HOTEL TAZAWAKO 早餐'},
+                    {time:'10:00', activity:'田澤湖滑雪場'},
+                    {time:'17:00', activity:'回住宿 KAMENOI HOTEL TAZAWAKO'},
+                    {time:'18:00', activity:'晚餐 + 自由活動'}
+                ]},
+                {date:'12/29', location:'田澤湖 → 奧入瀨溪', activities:[
+                    {time:'09:00', activity:'田澤湖租車'},
+                    {time:'12:00', activity:'星野午餐'},
+                    {time:'13:45', activity:'星野奧入瀨溪 check-in'},
+                    {time:'16:25', activity:'飯店活動'},
+                    {time:'19:20', activity:'⭐ 蘋果餐廳晚餐'}
+                ]},
+                {date:'12/30', location:'奧入瀨溪 → 青森 → 東京', activities:[
+                    {time:'09:00', activity:'奧入瀨溪早餐'},
+                    {time:'10:00', activity:'青森'},
+                    {time:'12:00', activity:'青森午餐'},
+                    {time:'18:00', activity:'還車'},
+                    {time:'19:44', activity:'JR Hayabusa42 往東京'},
+                    {time:'23:04', activity:'東京車站'},
+                    {time:'23:40', activity:'住宿地 TBD'}
+                ]},
+                {date:'12/31', location:'東京 → 台北', activities:[
+                    {time:'09:00', activity:'東京吃早餐'},
+                    {time:'10:00', activity:'逛街 買伴手禮'},
+                    {time:'12:00', activity:'東京午餐 TBA'},
+                    {time:'18:25', activity:'東京 → 成田機場'},
+                    {time:'21:50', activity:'起飛回台北 (MM626)'},
+                    {time:'23:30', activity:'抵達桃園機場 ✈️'}
+                ]}
+            ],
+            locations: [
+                '藏王滑雪場（樹冰） 山形県','狐狸村 宮城県白石市','銀山溫泉 山形県尾花沢市',
+                '角館 秋田県','田澤湖 秋田県','奧入瀨溪 青森県','星野奧入瀨溪 青森県'
+            ],
+            budget: [
+                {item:'機票 (MM626)', price:'¥0', note:'已購票'},
+                {item:'租車 (12/26-12/30)', price:'¥54,210', note:'山形市起租'},
+                {item:'藏王滑雪場門票', price:'¥4,700'},
+                {item:'狐狸村入場', price:'¥1,000'},
+                {item:'銀山溫泉', price:'¥3,000'},
+                {item:'住宿 (8晚)', price:'¥95,000'},
+                {item:'各地用餐', price:'¥25,000'},
+                {item:'奧入瀨溪巴士', price:'¥2,100'},
+                {item:'蘋果餐廳', price:'¥5,500'}
+            ]
+        };
+
+        const JPY_TO_NTD = 0.21;
+
+        function switchTab(btn, tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            btn.classList.add('active');
+            
+            if (tabName === 'calendar' && !document.getElementById('calendar-grid').children.length) initCalendar();
+            if (tabName === 'maps' && !document.getElementById('map-links').children.length) initMaps();
+            if (tabName === 'budget' && !document.getElementById('budget-list').children.length) initBudget();
+        }
+
+        function initCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            tripData.days.forEach((day, i) => {
+                const card = document.createElement('div');
+                card.className = 'day-card';
+                card.innerHTML = `
+                    <h4>📍 Day ${i+1} - ${day.date}</h4>
+                    <p style="font-weight:600; margin-bottom:12px;">${day.location}</p>
+                    ${day.activities.map(a => `<p><strong>${a.time}</strong> ${a.activity}</p>`).join('')}
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function initMaps() {
+            const links = document.getElementById('map-links');
+            tripData.locations.forEach(loc => {
+                const a = document.createElement('a');
+                a.href = `https://maps.google.com/maps?q=${encodeURIComponent(loc)}`;
+                a.target = '_blank';
+                a.className = 'map-link';
+                a.innerHTML = `<div><div style="font-weight:600;">${loc.split(' ')[0]}</div><div style="font-size:12px;color:var(--color-slate-500);">${loc.split(' ').slice(1).join(' ')}</div></div><div>→</div>`;
+                links.appendChild(a);
+            });
+        }
+
+        function initBudget() {
+            const list = document.getElementById('budget-list');
+            tripData.budget.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'budget-item';
+                div.innerHTML = `
+                    <div>
+                        <div style="font-weight:500;">${item.item}</div>
+                        <div style="font-size:12px;color:var(--color-slate-500);">${item.note||''}</div>
+                    </div>
+                    <div style="font-weight:600;color:var(--color-apple-red);">${item.price}</div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function convertCurrency() {
+            const jpy = document.getElementById('jpy-input').value;
+            const ntd = document.getElementById('ntd-output');
+            ntd.value = jpy ? Math.round(jpy * JPY_TO_NTD).toLocaleString() : '';
+        }
+
+        window.onload = () => {
+            convertCurrency();
+            initCalendar();
+            initMaps();
+            initBudget();
+        };
+    </script>
+</body>
+</html>
